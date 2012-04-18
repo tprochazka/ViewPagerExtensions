@@ -513,10 +513,12 @@ public class SwipeyTabsView extends RelativeLayout implements OnPageChangeListen
 				mPager.beginFakeDrag();
 				break;
 			case MotionEvent.ACTION_MOVE:
+				if (!mPager.isFakeDragging()) break; 
 				mPager.fakeDragBy((mDragX - x) * (-1));
 				mDragX = x;
 				break;
 			case MotionEvent.ACTION_UP:
+				if (!mPager.isFakeDragging()) break;
 				mPager.endFakeDrag();
 				break;
 		}
