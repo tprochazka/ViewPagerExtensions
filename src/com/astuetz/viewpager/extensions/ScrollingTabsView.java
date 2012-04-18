@@ -22,12 +22,13 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
-public class ScrollingTabsView extends HorizontalScrollView implements ViewPager.OnPageChangeListener {
+public class ScrollingTabsView extends HorizontalScrollView implements OnPageChangeListener {
 	
 	@SuppressWarnings("unused")
 	private static final String TAG = "com.astuetz.viewpager.extensions";
@@ -43,6 +44,8 @@ public class ScrollingTabsView extends HorizontalScrollView implements ViewPager
 	private ArrayList<View> mTabs = new ArrayList<View>();
 	
 	private Drawable mDividerDrawable;
+	
+	private TabClickListener mClickListener;
 	
 	private int mDividerColor = 0xFF636363;
 	private int mDividerMarginTop = 12;
@@ -88,6 +91,10 @@ public class ScrollingTabsView extends HorizontalScrollView implements ViewPager
 		
 		this.addView(mContainer);
 		
+	}
+	
+	public void setTabClickListener(TabClickListener listener) {
+		this.mClickListener = listener;
 	}
 	
 	/**
@@ -143,6 +150,7 @@ public class ScrollingTabsView extends HorizontalScrollView implements ViewPager
 			tab.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					if (mClickListener != null) mClickListener.onClick(index);
 					if (mPager.getCurrentItem() == index) selectTab(index);
 					else mPager.setCurrentItem(index);
 				}
@@ -206,13 +214,21 @@ public class ScrollingTabsView extends HorizontalScrollView implements ViewPager
 		
 		View selectedTab = mContainer.getChildAt(position * 2);
 		
-		final int w = selectedTab.getMeasuredWidth();
-		final int l = selectedTab.getLeft();
+		if (selectedTab != null) {
 		
-		final int x = l - this.getWidth() / 2 + w / 2;
+			final int w = selectedTab.getMeasuredWidth();
+			final int l = selectedTab.getLeft();
+			
+			final int x = l - this.getWidth() / 2 + w / 2;
+			
+			smoothScrollTo(x, this.getScrollY());
 		
-		smoothScrollTo(x, this.getScrollY());
+		}
 		
+	}
+	
+	public interface TabClickListener {
+		public void onClick(int position);
 	}
 	
 }
