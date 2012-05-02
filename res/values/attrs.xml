@@ -20,6 +20,8 @@
         
         <attr format="reference" name="dividerDrawable" />
         
+        <attr format="dimension" name="outsideOffset" />
+        
     </declare-styleable>
     
 </resources>
