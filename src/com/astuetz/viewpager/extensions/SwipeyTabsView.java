@@ -41,6 +41,8 @@ public class SwipeyTabsView extends RelativeLayout implements
     
     private int mPosition;
     
+    private int mOriginalPos = 0;
+    
     // This ArrayList stores the positions for each tab.
     private ArrayList<TabPosition> mPositions = new ArrayList<TabPosition>();
     
@@ -154,6 +156,7 @@ public class SwipeyTabsView extends RelativeLayout implements
         mTabsCount = getChildCount();
         
         mPosition = mPager.getCurrentItem();
+        mOriginalPos = mPosition; 
     }
     
     /**
@@ -454,7 +457,7 @@ public class SwipeyTabsView extends RelativeLayout implements
             calculateNewPositions(true);
         }
         
-        final int currentScrollX = mPosition
+        final int currentScrollX = (mPosition-mOriginalPos)
                 * (mPager.getWidth() + mPager.getPageMargin());
         
         // Check if the user is swiping to the left or to the right
