@@ -16,8 +16,6 @@
 
 package com.astuetz.viewpager.extensions;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v4.view.ViewPager;
@@ -27,6 +25,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.RelativeLayout;
+
+import java.util.ArrayList;
 
 public class SwipeyTabsView extends RelativeLayout implements
         OnPageChangeListener, OnTouchListener {
@@ -163,11 +163,11 @@ public class SwipeyTabsView extends RelativeLayout implements
     
     /**
      * Adds a new {@link SwipeyTabButton} to the layout
-     * 
+     *
+     * @param tab
+     *            View object for new tab
      * @param index
      *            The index from the Pagers adapter
-     * @param title
-     *            The title which should be used
      */
     public void addTab(View tab, final int index) {
         if (tab == null) return;
@@ -555,10 +555,16 @@ public class SwipeyTabsView extends RelativeLayout implements
         return v.equals(this) ? true : super.onTouchEvent(event);
     }
 
+    /**
+     * Allow define listener for handle click on center tab.
+     */
     public void setOnCenterItemClickListener(OnCenterItemClickListener listener) {
         mOnCenterClickListener = listener;
     }
 
+    /**
+     * Listener used in {@link #setOnCenterItemClickListener(OnCenterItemClickListener)}.
+     */
     public static abstract class OnCenterItemClickListener {
         public abstract void onCenterItemClick(int position);
     }
