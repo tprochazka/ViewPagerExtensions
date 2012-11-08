@@ -33,7 +33,9 @@ public class SwipeyTabsView extends RelativeLayout implements
     
     @SuppressWarnings("unused")
     private static final String TAG = "com.astuetz.viewpager.extensions";
-    
+
+    private OnCenterItemClickListener mOnCenterClickListener;
+
     // Scrolling direction
     private enum Direction {
         None, Left, Right
@@ -171,11 +173,17 @@ public class SwipeyTabsView extends RelativeLayout implements
         if (tab == null) return;
         
         addView(tab);
-        
+
+        tab.setTag(index);
         tab.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPager.setCurrentItem(index);
+                int index = (Integer) v.getTag();
+                if (index == mPager.getCurrentItem()) {
+                    mOnCenterClickListener.onCenterItemClick(index);
+                } else {
+                    mPager.setCurrentItem(index);
+                }
             }
         });
         
@@ -545,6 +553,14 @@ public class SwipeyTabsView extends RelativeLayout implements
         }
         
         return v.equals(this) ? true : super.onTouchEvent(event);
+    }
+
+    public void setOnCenterItemClickListener(OnCenterItemClickListener listener) {
+        mOnCenterClickListener = listener;
+    }
+
+    public static abstract class OnCenterItemClickListener {
+        public abstract void onCenterItemClick(int position);
     }
     
 }
