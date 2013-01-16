@@ -27,49 +27,63 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.AttributeSet;
 import android.view.View;
 
-
 public class IndicatorLineView extends View implements OnPageChangeListener {
-	
+
 	@SuppressWarnings("unused")
 	private static final String TAG = "com.astuetz.viewpager.extensions";
-	
+
+	private static final OnPageChangeListener mDummyPageChangeListener = new OnPageChangeListener() {
+		@Override
+		public void onPageSelected(int arg0) {
+		}
+
+		@Override
+		public void onPageScrolled(int arg0, float arg1, int arg2) {
+		}
+
+		@Override
+		public void onPageScrollStateChanged(int arg0) {
+		}
+	};
+
+	private OnPageChangeListener mOnPageChangeListener = mDummyPageChangeListener;
+
 	private ViewPager mPager;
-	
+
 	private int mLineColor = 0xFF34B5E8;
-	
+
 	private float mLineLeft = 0.0f;
 	private float mLineWidth = 0.0f;
-	
+
 	private int mFadeOutTime = 500;
 	private int mFadingDuration = 200;
-	
+
 	private int mAlpha = 0xFF;
-	
+
 	private FadeTimer mTimer;
-	
-	
+
 	public IndicatorLineView(Context context) {
 		this(context, null);
 	}
-	
+
 	public IndicatorLineView(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
-	
+
 	public IndicatorLineView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		
+
 		final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ViewPagerExtensions, defStyle, 0);
-		
+
 		mLineColor = a.getColor(R.styleable.ViewPagerExtensions_lineColor, mLineColor);
-		
+
 		mFadeOutTime = a.getInt(R.styleable.ViewPagerExtensions_fadeOutDelay, mFadeOutTime);
-		
+
 		mFadingDuration = a.getInt(R.styleable.ViewPagerExtensions_fadeOutDuration, mFadingDuration);
-		
+
 		a.recycle();
 	}
-	
+
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		if (mPager != null) {
@@ -79,155 +93,161 @@ public class IndicatorLineView extends View implements OnPageChangeListener {
 			resetTimer();
 		}
 	}
-	
-	
-	
+
+	public void setOnPageChangeListener(OnPageChangeListener listener) {
+		if (listener == null) {
+			mOnPageChangeListener = mDummyPageChangeListener;
+			return;
+		}
+
+		mOnPageChangeListener = listener;
+	}
+
 	public void setViewPager(ViewPager pager) {
 		this.mPager = pager;
 		mPager.setOnPageChangeListener(this);
 	}
-	
-	
+
 	private Paint mLinePaint = new Paint();
-	
+
+	@Override
 	protected synchronized void onDraw(Canvas canvas) {
-		
+
 		super.onDraw(canvas);
-		
+
 		final Paint linePaint = mLinePaint;
-		
+
 		final int color = Color.argb(mAlpha, Color.red(mLineColor), Color.green(mLineColor), Color.blue(mLineColor));
-		
+
 		linePaint.setColor(color);
-		
+
 		// draw the line
 		canvas.drawRect(mLineLeft, 0, mLineLeft + mLineWidth, getMeasuredHeight(), linePaint);
-		
+
 	}
-	
-	
-	
+
 	@Override
-	public void onPageScrollStateChanged(int state) {}
-	
+	public void onPageScrollStateChanged(int state) {
+		mOnPageChangeListener.onPageScrollStateChanged(state);
+	}
+
 	@Override
 	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-		
+
 		final float currentX = mPager.getScrollX();
 		final float fullX = (mPager.getWidth() + mPager.getPageMargin()) * (mPager.getAdapter().getCount());
-		
+
 		mLineLeft = getMeasuredWidth() * currentX / fullX;
-		
+
 		mLineWidth = getMeasuredWidth() / mPager.getAdapter().getCount();
-		
+
 		resetTimer();
-		
+
 		invalidate();
-		
+
+		mOnPageChangeListener.onPageScrolled(position, positionOffset, positionOffsetPixels);
 	}
-	
+
 	@Override
-	public void onPageSelected(int position) {}
-	
-	
-	
+	public void onPageSelected(int position) {
+		mOnPageChangeListener.onPageSelected(position);
+	}
+
 	public void setLineColor(int lineColor) {
 		this.mLineColor = lineColor;
 		invalidate();
 	}
-	
+
 	public int getLineColor() {
 		return this.mLineColor;
 	}
-	
+
 	public void setFadeOutDelay(int milliseconds) {
 		this.mFadeOutTime = milliseconds;
 		invalidate();
 	}
-	
+
 	public int getFadeOutDelay() {
 		return this.mFadeOutTime;
 	}
-	
+
 	public void setFadeOutDuration(int milliseconds) {
 		this.mFadingDuration = milliseconds;
 		invalidate();
 	}
-	
+
 	public int getFadeOutDuration() {
 		return this.mFadingDuration;
 	}
-	
-	
-	
+
 	private void setAlpha(int alpha) {
 		this.mAlpha = alpha;
 		invalidate();
 	}
-	
+
 	private void resetTimer() {
-		
+
 		if (mFadeOutTime > 0) {
-			
+
 			if (mTimer == null || mTimer.isRunning == false) {
 				mTimer = new FadeTimer();
 				mTimer.execute();
 			} else {
 				mTimer.reset();
 			}
-			
+
 			mAlpha = 0xFF;
-			
+
 		}
-		
+
 	}
-	
+
 	private class FadeTimer extends AsyncTask<Void, Integer, Void> {
-		
+
 		private int elapsed = 0;
 		private boolean isRunning = true;
-		
+
 		public void reset() {
 			elapsed = 0;
 		}
-		
+
 		@Override
 		protected Void doInBackground(Void... args) {
 			while (isRunning) {
 				try {
 					Thread.sleep(1);
 					elapsed++;
-					
+
 					if (elapsed >= mFadeOutTime && elapsed < mFadeOutTime + mFadingDuration) {
-						
+
 						int x0 = mFadeOutTime;
 						int x1 = mFadeOutTime + mFadingDuration;
 						int x = elapsed;
 						int y0 = 0xFF;
 						int y1 = 0x00;
-						
+
 						int a = y0 + ((x - x0) * y1 - (x - x0) * y0) / (x1 - x0);
 						publishProgress(a);
-					}
-					else if (elapsed >= mFadeOutTime + mFadingDuration) {
+					} else if (elapsed >= mFadeOutTime + mFadingDuration) {
 						isRunning = false;
 					}
-					
+
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 			return null;
 		}
-		
+
+		@Override
 		protected void onProgressUpdate(Integer... alpha) {
 			setAlpha(alpha[0]);
 		}
-		
+
 		@Override
 		protected void onPostExecute(Void result) {
 			setAlpha(0x00);
 		}
 	}
-	
+
 }
