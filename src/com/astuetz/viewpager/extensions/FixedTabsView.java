@@ -60,6 +60,7 @@ public class FixedTabsView extends LinearLayout implements ViewPager.OnPageChang
 	private int mDividerColor = 0xFF636363;
 	private int mDividerMarginTop = 12;
 	private int mDividerMarginBottom = 21;
+	private int mDividerWidth = 1;
 
 	public FixedTabsView(Context context) {
 		this(context, null);
@@ -77,7 +78,7 @@ public class FixedTabsView extends LinearLayout implements ViewPager.OnPageChang
 		final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ViewPagerExtensions, defStyle, 0);
 
 		mDividerColor = a.getColor(R.styleable.ViewPagerExtensions_dividerColor, mDividerColor);
-
+		mDividerWidth = (int) (getResources().getDisplayMetrics().density * mDividerWidth);
 		mDividerMarginTop = a.getDimensionPixelSize(R.styleable.ViewPagerExtensions_dividerMarginTop, mDividerMarginTop);
 		mDividerMarginBottom = a.getDimensionPixelSize(R.styleable.ViewPagerExtensions_dividerMarginBottom, mDividerMarginBottom);
 
@@ -189,7 +190,7 @@ public class FixedTabsView extends LinearLayout implements ViewPager.OnPageChang
 	private View getSeparator() {
 		View v = new View(mContext);
 
-		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(1, LayoutParams.FILL_PARENT);
+		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(mDividerWidth , LayoutParams.FILL_PARENT);
 		params.setMargins(0, mDividerMarginTop, 0, mDividerMarginBottom);
 		v.setLayoutParams(params);
 
