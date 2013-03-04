@@ -16,6 +16,8 @@
 
 package com.astuetz.viewpager.extensions;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v4.view.ViewPager;
@@ -26,13 +28,27 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.RelativeLayout;
 
-import java.util.ArrayList;
-
 public class SwipeyTabsView extends RelativeLayout implements
 		OnPageChangeListener, OnTouchListener {
 
 	@SuppressWarnings("unused")
 	private static final String TAG = "com.astuetz.viewpager.extensions";
+
+	private static final OnPageChangeListener mDummyPageChangeListener = new OnPageChangeListener() {
+		@Override
+		public void onPageSelected(int arg0) {
+		}
+
+		@Override
+		public void onPageScrolled(int arg0, float arg1, int arg2) {
+		}
+
+		@Override
+		public void onPageScrollStateChanged(int arg0) {
+		}
+	};
+
+	private OnPageChangeListener mOnPageChangeListener = mDummyPageChangeListener;
 
 	private OnCenterItemClickListener mOnCenterClickListener;
 
@@ -161,6 +177,15 @@ public class SwipeyTabsView extends RelativeLayout implements
 		mLastOffsetX = pager.getScrollX();
 
 		if (mPager != null && mAdapter != null) initTabs();
+	}
+
+	public void setOnPageChangeListener(OnPageChangeListener listener) {
+		if (listener == null) {
+			mOnPageChangeListener = mDummyPageChangeListener;
+			return;
+		}
+
+		mOnPageChangeListener = listener;
 	}
 
 	/**
@@ -480,7 +505,7 @@ public class SwipeyTabsView extends RelativeLayout implements
 	 */
 	@Override
 	public void onPageScrollStateChanged(final int state) {
-		// nothing
+		mOnPageChangeListener.onPageScrollStateChanged(state);
 	}
 
 	/**
@@ -528,6 +553,8 @@ public class SwipeyTabsView extends RelativeLayout implements
 
 		requestLayout();
 		//offsetChildren();
+
+		mOnPageChangeListener.onPageScrolled(position, positionOffset, positionOffsetPixels);
 	}
 
 	private void offsetChildren() {
@@ -554,6 +581,8 @@ public class SwipeyTabsView extends RelativeLayout implements
 		selectedIndex = position;
 		selected.setSelected(true);
 		unselected.setSelected(false);
+
+		mOnPageChangeListener.onPageSelected(position);
 	}
 
 	/**
