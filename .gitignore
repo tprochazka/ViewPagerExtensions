@@ -1,4 +1,44 @@
 #Android generated
 bin
 gen
-/.idea/
+lint.xml
+
+#Eclipse
+.project
+.classpath
+.settings
+.checkstyle
+
+#IntelliJ IDEA
+.idea
+*.iml
+*.ipr
+*.iws
+classes
+out
+gen-external-apklibs
+
+#Maven
+target
+release.properties
+pom.xml.*
+
+#Ant
+build.xml
+ant.properties
+local.properties
+proguard.cfg
+proguard-project.txt
+
+#SVN
+.svn
+
+#generated project config
+res/values/config.xml
+src/main/java/skeleton/android/Config.java
+res/drawable-*/icon.png
+
+
+#Other
+.DS_Store
+tmp
