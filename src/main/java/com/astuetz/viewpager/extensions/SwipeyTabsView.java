@@ -251,7 +251,7 @@ public class SwipeyTabsView extends RelativeLayout implements
 
 		mWidth = w;
 		mCenter = w / 2;
-		mHighlightOffset = w / 5;
+		mHighlightOffset = Math.max(1, w / 5);
 
 		if (mPager != null) mPosition = mPager.getCurrentItem();
 		calculateNewPositions(true);
