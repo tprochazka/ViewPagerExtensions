@@ -515,14 +515,14 @@ public class SwipeyTabsView extends RelativeLayout implements
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onPageScrolled(final int position, final float positionOffset,
-							   final int positionOffsetPixels) {
+	public void onPageScrolled(int position, final float positionOffset, final int positionOffsetPixels) {
+
+		position = position + (int)positionOffset;
 
 		if (position != mPosition) {
 			mPosition = position;
 			calculateNewPositions(false);
 		}
-
 
 		// Check if the user is swiping to the left or to the right
 		final Direction dir;
