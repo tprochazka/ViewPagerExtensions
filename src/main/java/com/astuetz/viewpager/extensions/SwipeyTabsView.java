@@ -16,6 +16,7 @@
 
 package com.astuetz.viewpager.extensions;
 
+import java.lang.Exception;
 import java.util.ArrayList;
 
 import android.content.Context;
@@ -620,20 +621,24 @@ public class SwipeyTabsView extends RelativeLayout implements
 	public boolean onTouch(final View v, final MotionEvent event) {
 		final float x = event.getRawX();
 
-		switch (event.getAction()) {
-			case MotionEvent.ACTION_DOWN:
-				mDragX = x;
-				mPager.beginFakeDrag();
-				break;
-			case MotionEvent.ACTION_MOVE:
-				if (!mPager.isFakeDragging()) break;
-				mPager.fakeDragBy((mDragX - x) * (-1));
-				mDragX = x;
-				break;
-			case MotionEvent.ACTION_UP:
-				if (!mPager.isFakeDragging()) break;
-				mPager.endFakeDrag();
-				break;
+		try {
+			switch (event.getAction()) {
+				case MotionEvent.ACTION_DOWN:
+					mDragX = x;
+					mPager.beginFakeDrag();
+					break;
+				case MotionEvent.ACTION_MOVE:
+					if (!mPager.isFakeDragging()) break;
+					mPager.fakeDragBy((mDragX - x) * (-1));
+					mDragX = x;
+					break;
+				case MotionEvent.ACTION_UP:
+					if (!mPager.isFakeDragging()) break;
+					mPager.endFakeDrag();
+					break;
+			}
+		} catch (Exception ex) {
+			// nothing required
 		}
 
 		return v.equals(this) ? true : super.onTouchEvent(event);
